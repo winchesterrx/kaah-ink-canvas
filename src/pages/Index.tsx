@@ -10,6 +10,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
+      {/* Extra padding space to account for the fixed header */}
+      <div className="pt-24 md:pt-28"></div>
       <HeroSection />
       <Portfolio />
       <AboutSection />

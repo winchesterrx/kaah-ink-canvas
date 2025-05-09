@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import { Separator } from "./ui/separator";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,7 +28,7 @@ const Header = () => {
   return (
     <header 
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-black/95 backdrop-blur-md shadow-md shadow-tattoo-purple/20" : "bg-transparent"
+        isScrolled ? "bg-black/95 backdrop-blur-md shadow-md shadow-tattoo-purple/20" : "bg-black/90"
       }`}
     >
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -88,6 +89,11 @@ const Header = () => {
             <Menu className="h-6 w-6" />
           </Button>
         </div>
+      </div>
+
+      {/* Separator */}
+      <div className="w-full px-4">
+        <Separator className="bg-tattoo-purple/30 h-[1px]" />
       </div>
 
       {/* Mobile Navigation */}

@@ -31,6 +31,37 @@ const portfolioItems = [
     id: 6,
     image: "https://images.unsplash.com/photo-1543059983-4c4582ce3683?w=500&auto=format&fit=crop",
     category: "Fineline"
+  },
+  // Adding more tattoo example images
+  {
+    id: 7,
+    image: "https://images.unsplash.com/photo-1511470937179-03d1966val80?w=500&auto=format&fit=crop",
+    category: "Blackwork"
+  },
+  {
+    id: 8,
+    image: "https://images.unsplash.com/photo-1588371856760-2b0eb4d93605?w=500&auto=format&fit=crop",
+    category: "Tribal"
+  },
+  {
+    id: 9,
+    image: "https://images.unsplash.com/photo-1542359649-c54bde3fc94b?w=500&auto=format&fit=crop",
+    category: "Delicada"
+  },
+  {
+    id: 10,
+    image: "https://images.unsplash.com/photo-1594226801341-41ae47e8cd3c?w=500&auto=format&fit=crop",
+    category: "Realismo"
+  },
+  {
+    id: 11,
+    image: "https://images.unsplash.com/photo-1574535004246-6d0e9db70a4f?w=500&auto=format&fit=crop",
+    category: "Abstrata"
+  },
+  {
+    id: 12,
+    image: "https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=500&auto=format&fit=crop",
+    category: "Colorida"
   }
 ];
 
@@ -50,7 +81,7 @@ const Portfolio = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {portfolioItems.map((item) => (
             <div 
               key={item.id} 

@@ -12,11 +12,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <div className="text-center md:text-left">
             <div className="mb-4 flex justify-center md:justify-start">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-tattoo-purple to-tattoo-dark-gray flex items-center justify-center border border-tattoo-purple/30 shadow-lg shadow-tattoo-purple/20">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-tattoo-purple to-tattoo-dark-gray flex items-center justify-center border border-tattoo-purple/30 shadow-lg shadow-tattoo-purple/20">
                 <img 
                   src="/lovable-uploads/798dfa87-f954-4053-ac09-d79752baf352.png" 
                   alt="Kaah Tattoo13 Logo" 
-                  className="w-14 h-14 object-contain"
+                  className="w-18 h-18 object-contain"
                 />
               </div>
             </div>

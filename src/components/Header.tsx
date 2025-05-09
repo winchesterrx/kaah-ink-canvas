@@ -33,11 +33,11 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center">
-          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-tattoo-purple to-tattoo-dark-gray flex items-center justify-center border border-tattoo-purple/30 shadow-lg shadow-tattoo-purple/20">
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-tattoo-purple to-tattoo-dark-gray flex items-center justify-center border border-tattoo-purple/30 shadow-lg shadow-tattoo-purple/20">
             <img 
               src="/lovable-uploads/798dfa87-f954-4053-ac09-d79752baf352.png" 
               alt="Kaah Tattoo13 Logo" 
-              className="w-10 h-10 md:w-14 md:h-14 object-contain"
+              className="w-14 h-14 md:w-18 md:h-18 object-contain"
             />
           </div>
         </div>

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { WhatsApp } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 const BookingForm = () => {
   const [formData, setFormData] = useState({
@@ -135,7 +135,7 @@ Aguardo seu retorno. Obrigado(a)!`;
                 type="submit"
                 className="bg-tattoo-purple hover:bg-tattoo-purple/80 text-white px-8 py-6 text-lg rounded-md shadow-lg shadow-tattoo-purple/30 hover:shadow-tattoo-purple/50 transition-all w-full md:w-auto group"
               >
-                <WhatsApp className="w-5 h-5 mr-2" />
+                <MessageCircle className="w-5 h-5 mr-2" />
                 Agendar via WhatsApp
               </Button>
               

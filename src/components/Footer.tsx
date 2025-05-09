@@ -1,5 +1,5 @@
 
-import { Instagram, WhatsApp } from "lucide-react";
+import { Instagram, MessageCircle } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -36,7 +36,7 @@ const Footer = () => {
                 rel="noopener noreferrer" 
                 className="text-tattoo-purple hover:text-white transition-colors inline-flex items-center"
               >
-                <WhatsApp className="w-4 h-4 mr-1" />
+                <MessageCircle className="w-4 h-4 mr-1" />
                 +55 17 99779-9982
               </a>
             </p>
@@ -61,7 +61,7 @@ const Footer = () => {
                 className="w-10 h-10 bg-tattoo-light-gray/50 hover:bg-tattoo-purple rounded-full flex items-center justify-center transition-colors"
                 aria-label="WhatsApp"
               >
-                <WhatsApp className="w-5 h-5" />
+                <MessageCircle className="w-5 h-5" />
               </a>
             </div>
           </div>

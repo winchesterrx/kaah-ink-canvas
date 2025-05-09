@@ -13,9 +13,11 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <div className="mb-4 flex justify-center md:justify-start">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-tattoo-purple to-tattoo-dark-gray flex items-center justify-center border border-tattoo-purple/30 shadow-lg shadow-tattoo-purple/20">
-                <h1 className="tattoo-title text-white text-sm">
-                  KAAH<br/>TATTOO<span className="text-tattoo-purple">13</span>
-                </h1>
+                <img 
+                  src="/lovable-uploads/798dfa87-f954-4053-ac09-d79752baf352.png" 
+                  alt="Kaah Tattoo13 Logo" 
+                  className="w-14 h-14 object-contain"
+                />
               </div>
             </div>
             

@@ -1,7 +1,8 @@
-
 import { useState, useEffect } from "react";
+import { imageStorage } from "@/utils/imageStorage";
 
-const portfolioItems = [
+// Mantenha os itens existentes como fallback
+const defaultPortfolioItems = [
   {
     id: 1,
     image: "https://images.unsplash.com/photo-1603610515337-193cb1156128?w=500&auto=format&fit=crop",
@@ -88,15 +89,34 @@ const portfolioItems = [
 const Portfolio = () => {
   const [activePhoto, setActivePhoto] = useState<number | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [portfolioItems, setPortfolioItems] = useState(defaultPortfolioItems);
   const [filteredItems, setFilteredItems] = useState(portfolioItems);
   
+  // Load saved images from storage on component mount
+  useEffect(() => {
+    const savedImages = imageStorage.getImages();
+    
+    if (savedImages && savedImages.length > 0) {
+      // Convert to the format we need
+      const savedPortfolioItems = savedImages.map((img, index) => ({
+        id: parseInt(img.id.replace(/\D/g, '')) || index + 1000, // Convert string id to number or use index
+        image: img.url,
+        category: img.category
+      }));
+      
+      // Combine with default items, but prioritize saved images
+      setPortfolioItems([...savedPortfolioItems, ...defaultPortfolioItems]);
+    }
+  }, []);
+  
+  // Filter items when active category or items change
   useEffect(() => {
     if (activeCategory) {
       setFilteredItems(portfolioItems.filter(item => item.category === activeCategory));
     } else {
       setFilteredItems(portfolioItems);
     }
-  }, [activeCategory]);
+  }, [activeCategory, portfolioItems]);
   
   // Extract unique categories
   const categories = Array.from(new Set(portfolioItems.map(item => item.category)));
@@ -141,6 +161,7 @@ const Portfolio = () => {
           ))}
         </div>
         
+        {/* Portfolio grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredItems.map((item) => (
             <div 
@@ -190,6 +211,7 @@ const Portfolio = () => {
           ))}
         </div>
         
+        {/* Footer section */}
         <div className="mt-12 text-center">
           <a 
             href="https://instagram.com/kaahtatto13" 

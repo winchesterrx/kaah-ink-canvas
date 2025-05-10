@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const portfolioItems = [
   {
@@ -83,47 +82,6 @@ const portfolioItems = [
     id: 16,
     image: "https://images.unsplash.com/photo-1586992066279-c0e04d37c05c?w=500&auto=format&fit=crop",
     category: "Fineline"
-  },
-  // Adding more tattoo images to fill empty spaces
-  {
-    id: 17,
-    image: "https://images.unsplash.com/photo-1591635566278-10dca0ca76bf?w=500&auto=format&fit=crop",
-    category: "Minimalista"
-  },
-  {
-    id: 18,
-    image: "https://images.unsplash.com/photo-1596539156184-257347a761bc?w=500&auto=format&fit=crop",
-    category: "Blackwork"
-  },
-  {
-    id: 19,
-    image: "https://images.unsplash.com/photo-1590246817284-0aa13d3cd119?w=500&auto=format&fit=crop",
-    category: "Geométrica"
-  },
-  {
-    id: 20,
-    image: "https://images.unsplash.com/photo-1590439330181-50251c4a5975?w=500&auto=format&fit=crop",
-    category: "Fineline"
-  },
-  {
-    id: 21,
-    image: "https://images.unsplash.com/photo-1582330421587-8562aa8d363a?w=500&auto=format&fit=crop",
-    category: "Floral"
-  },
-  {
-    id: 22,
-    image: "https://images.unsplash.com/photo-1598815220941-ebc92c80c9a6?w=500&auto=format&fit=crop",
-    category: "Colorida"
-  },
-  {
-    id: 23,
-    image: "https://images.unsplash.com/photo-1561040625-925174c246ab?w=500&auto=format&fit=crop",
-    category: "Realismo"
-  },
-  {
-    id: 24,
-    image: "https://images.unsplash.com/photo-1511268011861-691af5e100ae?w=500&auto=format&fit=crop",
-    category: "Delicada"
   }
 ];
 
@@ -181,35 +139,6 @@ const Portfolio = () => {
               {category}
             </button>
           ))}
-        </div>
-
-        {/* Featured tattoo showcase */}
-        <div className="mb-16 hidden md:block">
-          <div className="grid grid-cols-3 gap-6">
-            <div className="col-span-1 flex flex-col gap-6">
-              <div className="aspect-[2/3] rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/30">
-                <img 
-                  src="https://images.unsplash.com/photo-1593435241574-ffd6bc68387c?w=800&auto=format&fit=crop" 
-                  alt="Destaque de tatuagem floral"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="aspect-[3/2] rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/30">
-                <img 
-                  src="https://images.unsplash.com/photo-1568252748074-f9c8d87ea6c9?w=800&auto=format&fit=crop" 
-                  alt="Processo de tatuagem"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-            <div className="col-span-2 aspect-square rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/30">
-              <img 
-                src="https://images.unsplash.com/photo-1541127398312-a08a6b71ad6c?w=800&auto=format&fit=crop" 
-                alt="Destaque de tatuagem artística"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -271,23 +200,6 @@ const Portfolio = () => {
             Ver mais no Instagram @kaahtatto13
           </a>
         </div>
-      </div>
-      
-      {/* Floating decoration tattoo images */}
-      <div className="hidden lg:block absolute -right-20 top-40 w-40 h-40 rounded-full overflow-hidden border-2 border-tattoo-purple/30 blur-sm opacity-50">
-        <img 
-          src="https://images.unsplash.com/photo-1613047503507-b8d01f6a3991?w=300&auto=format&fit=crop" 
-          alt="Decoração"
-          className="w-full h-full object-cover"
-        />
-      </div>
-      
-      <div className="hidden lg:block absolute -left-20 bottom-40 w-56 h-56 rounded-full overflow-hidden border-2 border-tattoo-purple/30 blur-sm opacity-50">
-        <img 
-          src="https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=400&auto=format&fit=crop" 
-          alt="Decoração"
-          className="w-full h-full object-cover"
-        />
       </div>
     </section>
   );

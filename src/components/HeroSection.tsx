@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const HeroSection = () => {
   const scrollToPortfolio = () => {
@@ -18,11 +19,11 @@ const HeroSection = () => {
       {/* Background pattern */}
       <div className="absolute inset-0 bg-tattoo-pattern opacity-20"></div>
       
-      {/* Background image overlay */}
+      {/* Background image overlay with uploaded image */}
       <div 
-        className="absolute inset-0 opacity-30 bg-cover bg-center" 
+        className="absolute inset-0 opacity-40 bg-cover bg-center" 
         style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1484589065579-248aad0d8b13?q=80&w=1920&auto=format&fit=crop')`,
+          backgroundImage: `url('public/lovable-uploads/0b16d4a0-772a-4fcd-b6ae-fc16b17f3bb0.png')`,
           backgroundBlendMode: 'overlay'
         }}
       ></div>
@@ -71,7 +72,7 @@ const HeroSection = () => {
             <div className="flex flex-col gap-4">
               <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 animate-pulse-glow">
                 <img 
-                  src="https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?w=600&auto=format&fit=crop" 
+                  src="https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?w=600&auto=format&fit=crop" 
                   alt="Tatuagem fina e delicada" 
                   className="w-full h-auto"
                 />
@@ -101,6 +102,27 @@ const HeroSection = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      
+      {/* Floating images decorations */}
+      <div className="absolute top-20 left-10 w-20 h-20 hidden md:block">
+        <div className="rounded-full overflow-hidden border-2 border-tattoo-purple/50 shadow-lg shadow-tattoo-purple/20">
+          <img 
+            src="https://images.unsplash.com/photo-1513531500309-d115914585df?w=200&auto=format&fit=crop" 
+            alt="Detalhe de tatuagem" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+      
+      <div className="absolute bottom-40 right-10 w-32 h-32 hidden md:block">
+        <div className="rounded-full overflow-hidden border-2 border-tattoo-purple/50 shadow-lg shadow-tattoo-purple/20">
+          <img 
+            src="https://images.unsplash.com/photo-1598288645749-a604c02c232c?w=200&auto=format&fit=crop" 
+            alt="Detalhe de tatuagem" 
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
       

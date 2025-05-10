@@ -63,7 +63,7 @@ const HeroSection = () => {
             </div>
             <div className="flex flex-col gap-4 mt-12">
               <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20">
-                <img src="https://images.unsplash.com/photo-1611501355859-e35e923db303?w=600&auto=format&fit=crop" alt="Tatuagem minimalista" className="w-full h-auto" />
+                <img alt="Tatuagem minimalista" className="w-full h-auto" src="/lovable-uploads/38139249-61af-410e-80d4-df148da3443e.jpg" />
               </div>
               <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 animate-pulse-glow">
                 <img alt="Processo de tatuagem" className="w-full h-auto" src="/lovable-uploads/563ff2fb-6b22-45c8-8056-7c8f7b4d7c96.jpg" />

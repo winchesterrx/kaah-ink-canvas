@@ -1,154 +1,158 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { siteConfig } from "@/config/site";
+import { ModeToggle } from "@/components/mode-toggle";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
-import { Separator } from "./ui/separator";
+
+interface HeaderProps {
+  isMenuOpen: boolean;
+  toggleMenu: () => void;
+  closeMenu: () => void;
+}
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Determine if we're scrolling up or down
-      if (currentScrollY > lastScrollY) {
-        // Scrolling down
-        setIsVisible(false);
-      } else {
-        // Scrolling up
-        setIsVisible(true);
-      }
-      
-      // Update states
-      setIsScrolled(currentScrollY > 10);
-      setLastScrollY(currentScrollY);
-    };
-    
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-  
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    setMounted(true);
+  }, []);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
     setIsMenuOpen(false);
   };
 
-  return (
-    <header 
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-black/95 backdrop-blur-md shadow-md shadow-tattoo-purple/20" : "bg-black/90"
-      } ${isVisible ? "transform-none" : "-translate-y-full"}`}
-    >
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo */}
-        <div className="flex items-center">
-          <div className="w-20 h-20 md:w-28 md:h-28 flex items-center justify-center">
-            <img 
-              src="/lovable-uploads/798dfa87-f954-4053-ac09-d79752baf352.png" 
-              alt="Kaah Tattoo13 Logo" 
-              className="w-20 h-20 md:w-28 md:h-28 object-contain"
-            />
-          </div>
-        </div>
+  const siteName = siteConfig.name;
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          <button 
-            onClick={() => scrollToSection("home")}
-            className="text-white hover:text-tattoo-purple transition-colors"
-          >
-            Início
-          </button>
+  const BookingButton = ({ handleClick }: { handleClick?: () => void }) => (
+    <Button
+      className="bg-tattoo-purple hover:bg-tattoo-purple/80 text-white rounded-full px-6 py-3"
+      onClick={handleClick}
+    >
+      Agendar Tattoo
+    </Button>
+  );
+
+  return (
+    <header className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-sm z-50 transition-all duration-300">
+      <div className="container mx-auto px-4 py-4">
+        <nav className="flex justify-between items-center">
+          {/* Logo */}
+          <a href="#home" className="text-2xl font-bold text-tattoo-purple">
+            {siteName}
+          </a>
+          
+          {/* Mobile Menu Button */}
           <button
-            onClick={() => scrollToSection("portfolio")}
-            className="text-white hover:text-tattoo-purple transition-colors"
+            onClick={toggleMenu}
+            className="md:hidden text-white focus:outline-none"
           >
-            Portfólio
-          </button>
-          <button
-            onClick={() => scrollToSection("booking")}
-            className="text-white hover:text-tattoo-purple transition-colors"
-          >
-            Agende sua Tattoo
-          </button>
-          <button
-            onClick={() => scrollToSection("contact")}
-            className="text-white hover:text-tattoo-purple transition-colors"
-          >
-            Contato
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>
+            </svg>
           </button>
           
-          <Button 
-            onClick={() => scrollToSection("booking")}
-            className="bg-tattoo-purple hover:bg-tattoo-purple/80 text-white font-semibold ml-2"
-          >
-            Agende Agora
-          </Button>
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-white hover:bg-tattoo-purple/20"
-          >
-            <Menu className="h-6 w-6" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Separator */}
-      <div className="w-full px-4">
-        <Separator className="bg-tattoo-purple/30 h-[1px]" />
-      </div>
-
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-md border-t border-tattoo-purple/30 py-4 animate-fade-in">
-          <div className="container mx-auto px-4 flex flex-col gap-4">
-            <button 
-              onClick={() => scrollToSection("home")}
-              className="text-white hover:text-tattoo-purple transition-colors py-2 px-4 text-left"
-            >
-              Início
-            </button>
-            <button
-              onClick={() => scrollToSection("portfolio")}
-              className="text-white hover:text-tattoo-purple transition-colors py-2 px-4 text-left"
-            >
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="#home" className="text-white hover:text-tattoo-purple transition">
+              Home
+            </a>
+            <a href="#about" className="text-white hover:text-tattoo-purple transition">
+              Sobre
+            </a>
+            <a href="#portfolio" className="text-white hover:text-tattoo-purple transition">
               Portfólio
-            </button>
-            <button
-              onClick={() => scrollToSection("booking")}
-              className="text-white hover:text-tattoo-purple transition-colors py-2 px-4 text-left"
-            >
-              Agende sua Tattoo
-            </button>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="text-white hover:text-tattoo-purple transition-colors py-2 px-4 text-left"
-            >
-              Contato
-            </button>
-            
-            <Button 
-              onClick={() => scrollToSection("booking")}
-              className="bg-tattoo-purple hover:bg-tattoo-purple/80 text-white font-semibold mt-2 mx-4"
-            >
-              Agende Agora
-            </Button>
+            </a>
+            <a href="#booking" className="text-white hover:text-tattoo-purple transition">
+              Agenda
+            </a>
+            <a href="/login" className="text-white hover:text-tattoo-purple transition">
+              Área Restrita
+            </a>
+            <BookingButton />
           </div>
-        </div>
-      )}
+          
+          {/* Mobile Navigation */}
+          <div className={`fixed inset-0 bg-black z-50 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className="absolute top-4 right-4">
+              <button
+                onClick={closeMenu}
+                className="text-white focus:outline-none"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            
+            <div className="flex flex-col items-center justify-center h-full space-y-8 text-2xl">
+              <a 
+                href="#home" 
+                className="text-white hover:text-tattoo-purple transition"
+                onClick={closeMenu}
+              >
+                Home
+              </a>
+              <a 
+                href="#about" 
+                className="text-white hover:text-tattoo-purple transition"
+                onClick={closeMenu}
+              >
+                Sobre
+              </a>
+              <a 
+                href="#portfolio" 
+                className="text-white hover:text-tattoo-purple transition"
+                onClick={closeMenu}
+              >
+                Portfólio
+              </a>
+              <a 
+                href="#booking" 
+                className="text-white hover:text-tattoo-purple transition"
+                onClick={closeMenu}
+              >
+                Agenda
+              </a>
+              <a 
+                href="/login" 
+                className="text-white hover:text-tattoo-purple transition"
+                onClick={closeMenu}
+              >
+                Área Restrita
+              </a>
+              <BookingButton handleClick={closeMenu} />
+            </div>
+          </div>
+        </nav>
+      </div>
     </header>
   );
 };

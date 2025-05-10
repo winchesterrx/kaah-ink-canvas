@@ -38,13 +38,32 @@ const HeroSection = () => {
             Cada traço conta uma história única.
           </p>
           
-          <Button 
-            onClick={scrollToPortfolio}
-            className="bg-tattoo-purple hover:bg-tattoo-purple/80 text-white px-8 py-6 text-lg rounded-md shadow-lg shadow-tattoo-purple/30 hover:shadow-tattoo-purple/50 transition-all group"
-          >
-            Ver Portfólio 
-            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+            <Button 
+              onClick={scrollToPortfolio}
+              className="bg-tattoo-purple hover:bg-tattoo-purple/80 text-white px-8 py-6 text-lg rounded-md shadow-lg shadow-tattoo-purple/30 hover:shadow-tattoo-purple/50 transition-all group"
+            >
+              Ver Portfólio 
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            
+            <Button 
+              onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+              variant="outline"
+              className="border-tattoo-purple text-white hover:bg-tattoo-purple/20 px-8 py-6 text-lg"
+            >
+              Agende Agora
+            </Button>
+          </div>
+          
+          <div className="mt-12 flex flex-wrap gap-4 justify-center lg:justify-start items-center">
+            <span className="text-white/60">Técnicas:</span>
+            {["Minimalista", "Fineline", "Blackwork", "Realismo"].map((technique) => (
+              <span key={technique} className="px-3 py-1 bg-tattoo-purple/20 text-white/90 text-sm rounded-full">
+                {technique}
+              </span>
+            ))}
+          </div>
         </div>
         
         <div className="w-full lg:w-1/2 flex justify-center">

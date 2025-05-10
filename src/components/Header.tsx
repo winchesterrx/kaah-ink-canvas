@@ -7,15 +7,30 @@ import { Separator } from "./ui/separator";
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const currentScrollY = window.scrollY;
+      
+      // Determine if we're scrolling up or down
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down
+        setIsVisible(false);
+      } else {
+        // Scrolling up
+        setIsVisible(true);
+      }
+      
+      // Update states
+      setIsScrolled(currentScrollY > 10);
+      setLastScrollY(currentScrollY);
     };
     
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
   
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -29,7 +44,7 @@ const Header = () => {
     <header 
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         isScrolled ? "bg-black/95 backdrop-blur-md shadow-md shadow-tattoo-purple/20" : "bg-black/90"
-      }`}
+      } ${isVisible ? "transform-none" : "-translate-y-full"}`}
     >
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const portfolioItems = [
   {
@@ -62,11 +62,44 @@ const portfolioItems = [
     id: 12,
     image: "https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=500&auto=format&fit=crop",
     category: "Colorida"
+  },
+  {
+    id: 13,
+    image: "https://images.unsplash.com/photo-1518695860263-4847c47a8e3f?w=500&auto=format&fit=crop",
+    category: "Minimalista"
+  },
+  {
+    id: 14,
+    image: "https://images.unsplash.com/photo-1560707396-6e5961489bb8?w=500&auto=format&fit=crop",
+    category: "Geométrica"
+  },
+  {
+    id: 15,
+    image: "https://images.unsplash.com/photo-1567393528677-d6adae7d4a0a?w=500&auto=format&fit=crop",
+    category: "Blackwork"
+  },
+  {
+    id: 16,
+    image: "https://images.unsplash.com/photo-1586992066279-c0e04d37c05c?w=500&auto=format&fit=crop",
+    category: "Fineline"
   }
 ];
 
 const Portfolio = () => {
   const [activePhoto, setActivePhoto] = useState<number | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [filteredItems, setFilteredItems] = useState(portfolioItems);
+  
+  useEffect(() => {
+    if (activeCategory) {
+      setFilteredItems(portfolioItems.filter(item => item.category === activeCategory));
+    } else {
+      setFilteredItems(portfolioItems);
+    }
+  }, [activeCategory]);
+  
+  // Extract unique categories
+  const categories = Array.from(new Set(portfolioItems.map(item => item.category)));
   
   return (
     <section id="portfolio" className="py-24 bg-black">
@@ -81,8 +114,35 @@ const Portfolio = () => {
           </p>
         </div>
         
+        {/* Category filter */}
+        <div className="flex flex-wrap gap-3 justify-center mb-12">
+          <button
+            onClick={() => setActiveCategory(null)}
+            className={`px-4 py-2 rounded-full transition-all ${
+              activeCategory === null 
+                ? 'bg-tattoo-purple text-white' 
+                : 'bg-tattoo-dark-gray text-white/70 hover:bg-tattoo-purple/30'
+            }`}
+          >
+            Todos
+          </button>
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              className={`px-4 py-2 rounded-full transition-all ${
+                activeCategory === category 
+                  ? 'bg-tattoo-purple text-white' 
+                  : 'bg-tattoo-dark-gray text-white/70 hover:bg-tattoo-purple/30'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {portfolioItems.map((item) => (
+          {filteredItems.map((item) => (
             <div 
               key={item.id} 
               className="group relative overflow-hidden rounded-lg aspect-square cursor-pointer transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-tattoo-purple/20"

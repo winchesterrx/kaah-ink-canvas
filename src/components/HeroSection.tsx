@@ -1,5 +1,7 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+
 const HeroSection = () => {
   const scrollToPortfolio = () => {
     const portfolioSection = document.getElementById("portfolio");
@@ -9,15 +11,17 @@ const HeroSection = () => {
       });
     }
   };
-  return <section id="home" className="relative min-h-screen flex items-center justify-center pt-16 pb-24 skewed-bg bg-gradient-to-b from-black via-tattoo-dark-gray to-black overflow-hidden">
+  
+  return (
+    <section id="home" className="relative min-h-screen flex items-center justify-center pt-16 pb-24 skewed-bg bg-gradient-to-b from-black via-tattoo-dark-gray to-black overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 bg-tattoo-pattern opacity-20"></div>
       
       {/* Background image overlay */}
       <div className="absolute inset-0 opacity-30 bg-cover bg-center" style={{
-      backgroundImage: `url('https://images.unsplash.com/photo-1484589065579-248aad0d8b13?q=80&w=1920&auto=format&fit=crop')`,
-      backgroundBlendMode: 'overlay'
-    }}></div>
+        backgroundImage: `url('https://images.unsplash.com/photo-1484589065579-248aad0d8b13?q=80&w=1920&auto=format&fit=crop')`,
+        backgroundBlendMode: 'overlay'
+      }}></div>
       
       <div className="container mx-auto px-4 relative z-10 flex flex-col lg:flex-row items-center">
         <div className="w-full lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
@@ -37,17 +41,19 @@ const HeroSection = () => {
             </Button>
             
             <Button onClick={() => document.getElementById("booking")?.scrollIntoView({
-            behavior: "smooth"
-          })} variant="outline" className="border-tattoo-purple text-white hover:bg-tattoo-purple/20 px-8 py-6 text-lg">
+              behavior: "smooth"
+            })} variant="outline" className="border-tattoo-purple text-white hover:bg-tattoo-purple/20 px-8 py-6 text-lg">
               Agende Agora
             </Button>
           </div>
           
           <div className="mt-12 flex flex-wrap gap-4 justify-center lg:justify-start items-center">
             <span className="text-white/60">Técnicas:</span>
-            {["Minimalista", "Fineline", "Blackwork", "Realismo"].map(technique => <span key={technique} className="px-3 py-1 bg-tattoo-purple/20 text-white/90 text-sm rounded-full">
+            {["Minimalista", "Fineline", "Blackwork", "Realismo"].map(technique => (
+              <span key={technique} className="px-3 py-1 bg-tattoo-purple/20 text-white/90 text-sm rounded-full">
                 {technique}
-              </span>)}
+              </span>
+            ))}
           </div>
         </div>
         
@@ -76,6 +82,8 @@ const HeroSection = () => {
       {/* Decorative elements */}
       <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-black to-transparent"></div>
       <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-[120%] h-1 bg-tattoo-purple/30 rounded-full blur-md"></div>
-    </section>;
+    </section>
+  );
 };
+
 export default HeroSection;

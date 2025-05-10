@@ -1,4 +1,6 @@
 
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+
 const AboutSection = () => {
   return (
     <section className="py-24 bg-gradient-to-b from-black to-tattoo-dark-gray relative overflow-hidden">
@@ -9,11 +11,13 @@ const AboutSection = () => {
           <div className="w-full md:w-2/5">
             <div className="relative">
               <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-tattoo-purple/30 shadow-xl shadow-tattoo-purple/20 mx-auto">
-                <img 
-                  src="https://images.unsplash.com/photo-1510227089894-b9fe73f6dabb?w=500&auto=format&fit=crop" 
-                  alt="Kaah Silva - Tatuadora" 
-                  className="w-full h-full object-cover"
-                />
+                <AspectRatio ratio={1 / 1} className="h-full w-full">
+                  <img 
+                    src="/lovable-uploads/1cd2536b-713c-497c-bee0-9abbfe8ccf8f.png" 
+                    alt="Kaah Silva - Tatuadora" 
+                    className="w-full h-full object-cover object-top"
+                  />
+                </AspectRatio>
               </div>
               
               {/* Decorative elements */}

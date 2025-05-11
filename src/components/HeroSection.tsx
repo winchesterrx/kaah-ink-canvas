@@ -57,22 +57,38 @@ const HeroSection = () => {
           </div>
         </div>
         
-        <div className="w-full lg:w-1/2 flex justify-center">
-          <div className="grid grid-cols-2 gap-4 max-w-lg">
-            <div className="flex flex-col gap-4">
-              <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 animate-pulse-glow">
-                <img src="https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?w=600&auto=format&fit=crop" alt="Tatuagem fina e delicada" className="w-full h-auto" />
+        <div className="w-full lg:w-1/2 flex justify-center items-center">
+          <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+            <div className="flex flex-col gap-3">
+              <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 animate-pulse-glow h-48 md:h-56">
+                <img 
+                  src="https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?w=600&auto=format&fit=crop" 
+                  alt="Tatuagem fina e delicada" 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 mt-auto">
-                <img alt="Tatuagem artística" className="w-full h-auto" src="/lovable-uploads/2217d8c0-fbb2-4868-8e69-ced8a07b13e9.jpg" />
+              <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 mt-auto h-48 md:h-56">
+                <img 
+                  alt="Tatuagem artística" 
+                  className="w-full h-full object-cover" 
+                  src="/lovable-uploads/2217d8c0-fbb2-4868-8e69-ced8a07b13e9.jpg" 
+                />
               </div>
             </div>
-            <div className="flex flex-col gap-4 mt-12">
-              <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20">
-                <img alt="Tatuagem minimalista" className="w-full h-auto" src="/lovable-uploads/38139249-61af-410e-80d4-df148da3443e.jpg" />
+            <div className="flex flex-col gap-3 mt-6">
+              <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 h-48 md:h-56">
+                <img 
+                  alt="Tatuagem minimalista" 
+                  className="w-full h-full object-cover" 
+                  src="/lovable-uploads/38139249-61af-410e-80d4-df148da3443e.jpg" 
+                />
               </div>
-              <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 animate-pulse-glow">
-                <img alt="Processo de tatuagem" className="w-full h-auto" src="/lovable-uploads/563ff2fb-6b22-45c8-8056-7c8f7b4d7c96.jpg" />
+              <div className="rounded-lg overflow-hidden shadow-lg shadow-tattoo-purple/20 animate-pulse-glow mt-auto h-48 md:h-56">
+                <img 
+                  alt="Processo de tatuagem" 
+                  className="w-full h-full object-cover" 
+                  src="/lovable-uploads/563ff2fb-6b22-45c8-8056-7c8f7b4d7c96.jpg" 
+                />
               </div>
             </div>
           </div>

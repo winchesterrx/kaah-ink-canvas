@@ -1,6 +1,6 @@
 
 export const siteConfig = {
-  name: "Tattoo Studio",
+  name: "Kah Tattoo",
   description: "Estúdio de tatuagem profissional",
   mainNav: [
     {

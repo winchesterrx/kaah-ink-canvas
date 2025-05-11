@@ -4,6 +4,7 @@ import { siteConfig } from "@/config/site";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { Image } from "lucide-react";
 
 interface HeaderProps {
   isMenuOpen: boolean;
@@ -44,8 +45,11 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <nav className="flex justify-between items-center">
           {/* Logo */}
-          <a href="#home" className="text-2xl font-bold text-tattoo-purple">
-            {siteName}
+          <a href="#home" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-tattoo-purple rounded-full flex items-center justify-center">
+              <Image size={18} className="text-white" />
+            </div>
+            <span className="text-2xl font-bold text-tattoo-purple">{siteName}</span>
           </a>
           
           {/* Mobile Menu Button */}

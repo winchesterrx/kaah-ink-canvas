@@ -4,7 +4,6 @@ import { siteConfig } from "@/config/site";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Image } from "lucide-react";
 
 interface HeaderProps {
   isMenuOpen: boolean;
@@ -46,8 +45,12 @@ const Header = () => {
         <nav className="flex justify-between items-center">
           {/* Logo */}
           <a href="#home" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-tattoo-purple rounded-full flex items-center justify-center">
-              <Image size={18} className="text-white" />
+            <div className="h-10 w-10 flex items-center justify-center">
+              <img 
+                src="/lovable-uploads/ee20fa04-07fe-41e2-b067-989cfba771ea.png" 
+                alt="Kaah Tattoo Logo" 
+                className="h-full w-full object-contain"
+              />
             </div>
             <span className="text-2xl font-bold text-tattoo-purple">{siteName}</span>
           </a>

@@ -1,166 +1,183 @@
+import { githubConfig } from '@/config/github';
 
-// Simple in-memory image storage
+// Image storage with physical file system
 interface ImageData {
   id: string;
-  file?: File;
   url: string;
   category: string;
   timestamp: number;
+  cloudinary_id?: string;
 }
 
 // Default images stored in the project root
 const defaultImages = [
   {
     id: 'default_1',
-    url: '/lovable-uploads/38139249-61af-410e-80d4-df148da3443e.jpg',
+    url: '/uploads/38139249-61af-410e-80d4-df148da3443e.jpg',
     category: 'Minimalista',
     timestamp: Date.now() - 1000000
   },
   {
     id: 'default_2',
-    url: '/lovable-uploads/563ff2fb-6b22-45c8-8056-7c8f7b4d7c96.jpg',
+    url: '/uploads/563ff2fb-6b22-45c8-8056-7c8f7b4d7c96.jpg',
     category: 'Fineline',
     timestamp: Date.now() - 2000000
   },
   {
     id: 'default_3',
-    url: '/lovable-uploads/2217d8c0-fbb2-4868-8e69-ced8a07b13e9.jpg',
+    url: '/uploads/2217d8c0-fbb2-4868-8e69-ced8a07b13e9.jpg',
     category: 'Floral',
     timestamp: Date.now() - 3000000
   },
   {
     id: 'default_4',
-    url: '/lovable-uploads/1cd2536b-713c-497c-bee0-9abbfe8ccf8f.png',
+    url: '/uploads/1cd2536b-713c-497c-bee0-9abbfe8ccf8f.png',
     category: 'Geométrica',
     timestamp: Date.now() - 4000000
   },
   {
     id: 'default_5',
-    url: '/lovable-uploads/798dfa87-f954-4053-ac09-d79752baf352.png',
+    url: '/uploads/798dfa87-f954-4053-ac09-d79752baf352.png',
     category: 'Blackwork',
     timestamp: Date.now() - 5000000
   },
   {
     id: 'default_6',
-    url: '/lovable-uploads/ee20fa04-07fe-41e2-b067-989cfba771ea.png',
+    url: '/uploads/ee20fa04-07fe-41e2-b067-989cfba771ea.png',
     category: 'Tribal',
     timestamp: Date.now() - 6000000
   }
 ];
 
 class ImageStorage {
-  private readonly storageKey = "tattoo_images";
-  
-  // Get all stored images
-  getImages(): ImageData[] {
-    const storedData = localStorage.getItem(this.storageKey);
-    const userImages = storedData ? JSON.parse(storedData) : [];
-    
-    // Combine user-uploaded images with default project images
-    return [...userImages, ...this.getDefaultImages()];
+  private readonly cache: Map<string, ImageData[]> = new Map();
+  private readonly cacheTimeout = 5 * 60 * 1000; // 5 minutos
+  private lastCacheUpdate = 0;
+
+  private async makeGitHubRequest(endpoint: string, options: RequestInit = {}) {
+    const headers = {
+      'Authorization': `token ${githubConfig.token}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+
+    const response = await fetch(`${githubConfig.baseUrl}/repos/${githubConfig.owner}/${githubConfig.repo}${endpoint}`, {
+      ...options,
+      headers
+    });
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        throw new Error('Limite de requisições da API do GitHub atingido. Tente novamente em alguns minutos.');
+      }
+      throw new Error(`Erro na requisição ao GitHub: ${response.statusText}`);
+    }
+
+    return response;
   }
-  
-  // Get default images that are stored in project
-  getDefaultImages(): any[] {
-    return defaultImages;
+
+  private getCategoryFromFilename(filename: string): string {
+    const match = filename.match(/_([^_]+)\.[^.]+$/);
+    return match ? match[1] : 'Sem Categoria';
   }
-  
-  // Get images by category
-  getImagesByCategory(category: string): ImageData[] {
-    return this.getImages().filter(img => img.category === category);
-  }
-  
-  // Save an image
-  async saveImage(file: File, category: string): Promise<ImageData> {
+
+  private async fileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      
-      reader.onload = (e) => {
-        const url = e.target?.result as string;
-        
-        // Create image data
-        const imageData: ImageData = {
-          id: `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          url: url,
-          category: category,
-          timestamp: Date.now()
-        };
-        
-        // Save to storage
-        const currentImages = this.getUserImages();
-        const updatedImages = [...currentImages, imageData];
-        
-        try {
-          localStorage.setItem(this.storageKey, JSON.stringify(updatedImages));
-          console.log("Image saved successfully:", imageData.id);
-          resolve(imageData);
-        } catch (error) {
-          console.error("Error saving image to localStorage:", error);
-          
-          // If localStorage is full, try with a more compressed approach
-          if (error instanceof DOMException && (error.name === 'QuotaExceededError' || error.name === 'QUOTA_EXCEEDED_ERR')) {
-            console.log("Storage quota exceeded, trying with compressed data");
-            
-            // Store with reduced quality or remove older images
-            const slimImages = [
-              ...currentImages.slice(-15), // Keep only the most recent 15 images
-              imageData
-            ];
-            
-            try {
-              localStorage.setItem(this.storageKey, JSON.stringify(slimImages));
-              console.log("Image saved with reduced data collection");
-              resolve(imageData);
-            } catch (secondError) {
-              console.error("Failed to save even with reduced collection:", secondError);
-              reject(new Error("Failed to save image due to storage limitations"));
-            }
-          } else {
-            reject(error);
-          }
-        }
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        resolve(base64);
       };
-      
-      reader.onerror = () => {
-        reject(new Error("Failed to read file"));
-      };
-      
+      reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   }
-  
-  // Get only user-uploaded images
-  getUserImages(): ImageData[] {
+
+  private shouldRefreshCache(): boolean {
+    return Date.now() - this.lastCacheUpdate > this.cacheTimeout;
+  }
+
+  async getImages(): Promise<ImageData[]> {
     try {
-      const storedData = localStorage.getItem(this.storageKey);
-      return storedData ? JSON.parse(storedData) : [];
+      if (!this.shouldRefreshCache() && this.cache.has('all')) {
+        return this.cache.get('all')!;
+      }
+
+      const response = await this.makeGitHubRequest('/contents/uploads');
+      const files = await response.json();
+
+      const userImages = files.map((file: any) => ({
+        id: file.sha,
+        url: file.download_url,
+        category: this.getCategoryFromFilename(file.name),
+        timestamp: Date.now()
+      }));
+
+      const allImages = [...userImages, ...defaultImages];
+      this.cache.set('all', allImages);
+      this.lastCacheUpdate = Date.now();
+
+      return allImages;
     } catch (error) {
-      console.error("Error retrieving user images:", error);
-      return [];
+      console.error('Erro ao buscar imagens:', error);
+      return defaultImages;
     }
   }
-  
-  // Delete an image
-  deleteImage(imageId: string): boolean {
-    // If it's a default image, we can't delete it
-    if (imageId.startsWith('default_')) {
+
+  async getImagesByCategory(category: string): Promise<ImageData[]> {
+    const allImages = await this.getImages();
+    return allImages.filter(img => img.category === category);
+  }
+
+  async saveImage(file: File, category: string): Promise<void> {
+    try {
+      const filename = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${category}.${file.name.split('.').pop()}`;
+      const base64Data = await this.fileToBase64(file);
+
+      await this.makeGitHubRequest('/contents/uploads/' + filename, {
+        method: 'PUT',
+        body: JSON.stringify({
+          message: `Upload imagem: ${filename}`,
+          content: base64Data,
+          branch: githubConfig.branch
+        })
+      });
+
+      // Invalidate cache
+      this.lastCacheUpdate = 0;
+    } catch (error) {
+      console.error('Erro ao salvar imagem:', error);
+      throw error;
+    }
+  }
+
+  async deleteImage(id: string): Promise<boolean> {
+    try {
+      if (id.startsWith('default_')) return false;
+
+      const allImages = await this.getImages();
+      const image = allImages.find(img => img.id === id);
+      if (!image) return false;
+
+      const filename = image.url.split('/').pop();
+      const fileInfo = await this.makeGitHubRequest('/contents/uploads/' + filename).then(r => r.json());
+
+      await this.makeGitHubRequest('/contents/uploads/' + filename, {
+        method: 'DELETE',
+        body: JSON.stringify({
+          message: `Remoção de imagem: ${filename}`,
+          sha: fileInfo.sha,
+          branch: githubConfig.branch
+        })
+      });
+
+      // Invalidate cache
+      this.lastCacheUpdate = 0;
+      return true;
+    } catch (error) {
+      console.error('Erro ao deletar imagem:', error);
       return false;
     }
-    
-    const currentImages = this.getUserImages();
-    const updatedImages = currentImages.filter(img => img.id !== imageId);
-    
-    if (updatedImages.length !== currentImages.length) {
-      localStorage.setItem(this.storageKey, JSON.stringify(updatedImages));
-      return true;
-    }
-    
-    return false;
-  }
-  
-  // Clear all user images
-  clearAllImages(): void {
-    localStorage.removeItem(this.storageKey);
   }
 }
 

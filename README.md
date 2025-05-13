@@ -71,3 +71,22 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+# Kaah Ink Canvas
+
+## Sistema de Upload de Imagens
+
+O sistema de upload de imagens utiliza o GitHub como storage. Para configurar:
+
+1. Crie um novo repositório no GitHub para armazenar as imagens
+2. Gere um token de acesso pessoal no GitHub com permissões de repo
+3. Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+
+```env
+VITE_GITHUB_TOKEN=seu_token_aqui
+VITE_GITHUB_OWNER=seu_usuario_github
+VITE_GITHUB_REPO=kaah-ink-uploads
+VITE_GITHUB_BRANCH=main
+```
+
+4. As imagens serão armazenadas no repositório especificado e servidas através do GitHub Pages

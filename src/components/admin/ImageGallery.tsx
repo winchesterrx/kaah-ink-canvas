@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { imageStorage } from "@/utils/imageStorage";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,7 @@ interface ImageData {
 const ImageGallery = () => {
   const [images, setImages] = useState<ImageData[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   
   // Categories based on the existing portfolio
@@ -43,14 +43,15 @@ const ImageGallery = () => {
     loadImages();
   }, [selectedCategory]);
   
-  const loadImages = () => {
-    let loadedImages: ImageData[];
-    
+  const loadImages = async () => {
+    setIsLoading(true);
     try {
+      let loadedImages: ImageData[];
+      
       if (!selectedCategory || selectedCategory === "Todas") {
-        loadedImages = imageStorage.getImages();
+        loadedImages = await imageStorage.getImages();
       } else {
-        loadedImages = imageStorage.getImagesByCategory(selectedCategory);
+        loadedImages = await imageStorage.getImagesByCategory(selectedCategory);
       }
       
       // Sort by newest first
@@ -64,10 +65,12 @@ const ImageGallery = () => {
         variant: "destructive"
       });
       setImages([]);
+    } finally {
+      setIsLoading(false);
     }
   };
   
-  const handleDeleteImage = (id: string) => {
+  const handleDeleteImage = async (id: string) => {
     // Check if it's a default image
     if (id.startsWith('default_')) {
       toast({
@@ -80,7 +83,7 @@ const ImageGallery = () => {
     
     if (confirm("Tem certeza que deseja excluir esta imagem?")) {
       try {
-        const success = imageStorage.deleteImage(id);
+        const success = await imageStorage.deleteImage(id);
         
         if (success) {
           toast({
@@ -128,7 +131,12 @@ const ImageGallery = () => {
         </Select>
       </div>
       
-      {images.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-16">
+          <div className="w-16 h-16 border-4 border-tattoo-purple border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60">Carregando imagens...</p>
+        </div>
+      ) : images.length === 0 ? (
         <div className="text-center py-16 bg-tattoo-dark-gray/30 rounded-xl border border-tattoo-purple/10">
           <p className="text-lg text-white/60">
             {selectedCategory && selectedCategory !== "Todas" 

@@ -1,4 +1,3 @@
-
 import { Instagram, MessageCircle } from "lucide-react";
 
 const Footer = () => {

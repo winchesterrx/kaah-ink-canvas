@@ -1,3 +1,4 @@
+
 // Simple in-memory image storage
 interface ImageData {
   id: string;
@@ -71,7 +72,7 @@ class ImageStorage {
   
   // Save an image
   async saveImage(file: File, category: string): Promise<ImageData> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
       reader.onload = (e) => {
@@ -80,7 +81,6 @@ class ImageStorage {
         // Create image data
         const imageData: ImageData = {
           id: `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          file: file,
           url: url,
           category: category,
           timestamp: Date.now()
@@ -93,24 +93,36 @@ class ImageStorage {
         try {
           localStorage.setItem(this.storageKey, JSON.stringify(updatedImages));
           console.log("Image saved successfully:", imageData.id);
+          resolve(imageData);
         } catch (error) {
           console.error("Error saving image to localStorage:", error);
           
-          // If localStorage is full, remove file data but keep the URL
+          // If localStorage is full, try with a more compressed approach
           if (error instanceof DOMException && (error.name === 'QuotaExceededError' || error.name === 'QUOTA_EXCEEDED_ERR')) {
-            // Create a slimmer version without the full file data
-            const slimImageData: ImageData = {
-              ...imageData,
-              file: undefined
-            };
+            console.log("Storage quota exceeded, trying with compressed data");
             
-            const slimImages = [...currentImages.map(img => ({...img, file: undefined})), slimImageData];
-            localStorage.setItem(this.storageKey, JSON.stringify(slimImages));
-            console.log("Image saved with reduced data due to storage limitations");
+            // Store with reduced quality or remove older images
+            const slimImages = [
+              ...currentImages.slice(-15), // Keep only the most recent 15 images
+              imageData
+            ];
+            
+            try {
+              localStorage.setItem(this.storageKey, JSON.stringify(slimImages));
+              console.log("Image saved with reduced data collection");
+              resolve(imageData);
+            } catch (secondError) {
+              console.error("Failed to save even with reduced collection:", secondError);
+              reject(new Error("Failed to save image due to storage limitations"));
+            }
+          } else {
+            reject(error);
           }
         }
-        
-        resolve(imageData);
+      };
+      
+      reader.onerror = () => {
+        reject(new Error("Failed to read file"));
       };
       
       reader.readAsDataURL(file);

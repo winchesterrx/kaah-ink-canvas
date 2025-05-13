@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -42,7 +41,7 @@ const Admin = () => {
     return <Navigate to="/login" />;
   }
   
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
@@ -67,11 +66,11 @@ const Admin = () => {
           continue;
         }
         
-        // Check file size - limit to 2MB
-        if (file.size > 2 * 1024 * 1024) {
+        // Check file size - limit to 5MB
+        if (file.size > 5 * 1024 * 1024) {
           toast({
             title: "Arquivo muito grande",
-            description: `${file.name} excede o limite de 2MB.`,
+            description: `${file.name} excede o limite de 5MB.`,
             variant: "destructive"
           });
           errorCount++;
@@ -114,7 +113,7 @@ const Admin = () => {
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [selectedCategory, toast]);
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-black to-tattoo-dark-gray text-white">
@@ -229,7 +228,7 @@ const Admin = () => {
                       {isUploading ? 'Por favor aguarde' : 'Ou arraste e solte os arquivos aqui'}
                     </span>
                     <span className="text-xs text-white/40 mt-2">
-                      Tamanho máximo: 2MB por imagem
+                      Tamanho máximo: 5MB por imagem
                     </span>
                   </Label>
                 </div>

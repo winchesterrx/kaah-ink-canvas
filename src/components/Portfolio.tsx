@@ -1,111 +1,29 @@
+
 import { useState, useEffect } from "react";
 import { imageStorage } from "@/utils/imageStorage";
-
-// Mantenha os itens existentes como fallback
-const defaultPortfolioItems = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1603610515337-193cb1156128?w=500&auto=format&fit=crop",
-    category: "Minimalista"
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1612719734820-65270bcd5409?w=500&auto=format&fit=crop",
-    category: "Fineline"
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1542856391-010fb87dcfed?w=500&auto=format&fit=crop",
-    category: "Floral"
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1618333258404-78d8a6e39005?w=500&auto=format&fit=crop",
-    category: "Geométrica"
-  },
-  {
-    id: 5,
-    image: "https://images.unsplash.com/photo-1543411490-1209568b602a?w=500&auto=format&fit=crop",
-    category: "Minimalista"
-  },
-  {
-    id: 6,
-    image: "https://images.unsplash.com/photo-1543059983-4c4582ce3683?w=500&auto=format&fit=crop",
-    category: "Fineline"
-  },
-  // Adding more tattoo example images
-  {
-    id: 7,
-    image: "https://images.unsplash.com/photo-1511470937179-03d1966val80?w=500&auto=format&fit=crop",
-    category: "Blackwork"
-  },
-  {
-    id: 8,
-    image: "https://images.unsplash.com/photo-1588371856760-2b0eb4d93605?w=500&auto=format&fit=crop",
-    category: "Tribal"
-  },
-  {
-    id: 9,
-    image: "https://images.unsplash.com/photo-1542359649-c54bde3fc94b?w=500&auto=format&fit=crop",
-    category: "Delicada"
-  },
-  {
-    id: 10,
-    image: "https://images.unsplash.com/photo-1594226801341-41ae47e8cd3c?w=500&auto=format&fit=crop",
-    category: "Realismo"
-  },
-  {
-    id: 11,
-    image: "https://images.unsplash.com/photo-1574535004246-6d0e9db70a4f?w=500&auto=format&fit=crop",
-    category: "Abstrata"
-  },
-  {
-    id: 12,
-    image: "https://images.unsplash.com/photo-1494774157365-9e04c6720e47?w=500&auto=format&fit=crop",
-    category: "Colorida"
-  },
-  {
-    id: 13,
-    image: "https://images.unsplash.com/photo-1518695860263-4847c47a8e3f?w=500&auto=format&fit=crop",
-    category: "Minimalista"
-  },
-  {
-    id: 14,
-    image: "https://images.unsplash.com/photo-1560707396-6e5961489bb8?w=500&auto=format&fit=crop",
-    category: "Geométrica"
-  },
-  {
-    id: 15,
-    image: "https://images.unsplash.com/photo-1567393528677-d6adae7d4a0a?w=500&auto=format&fit=crop",
-    category: "Blackwork"
-  },
-  {
-    id: 16,
-    image: "https://images.unsplash.com/photo-1586992066279-c0e04d37c05c?w=500&auto=format&fit=crop",
-    category: "Fineline"
-  }
-];
 
 const Portfolio = () => {
   const [activePhoto, setActivePhoto] = useState<number | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [portfolioItems, setPortfolioItems] = useState(defaultPortfolioItems);
-  const [filteredItems, setFilteredItems] = useState(portfolioItems);
+  const [portfolioItems, setPortfolioItems] = useState<any[]>([]);
+  const [filteredItems, setFilteredItems] = useState<any[]>([]);
   
   // Load saved images from storage on component mount
   useEffect(() => {
-    const savedImages = imageStorage.getImages();
+    // Get all images including default ones
+    const allImages = imageStorage.getImages();
     
-    if (savedImages && savedImages.length > 0) {
+    if (allImages && allImages.length > 0) {
       // Convert to the format we need
-      const savedPortfolioItems = savedImages.map((img, index) => ({
-        id: parseInt(img.id.replace(/\D/g, '')) || index + 1000, // Convert string id to number or use index
+      const formattedItems = allImages.map((img, index) => ({
+        id: typeof img.id === 'string' && img.id.includes('_') 
+          ? parseInt(img.id.split('_')[1]) || index + 1000
+          : index + 1000,
         image: img.url,
         category: img.category
       }));
       
-      // Combine with default items, but prioritize saved images
-      setPortfolioItems([...savedPortfolioItems, ...defaultPortfolioItems]);
+      setPortfolioItems(formattedItems);
     }
   }, []);
   

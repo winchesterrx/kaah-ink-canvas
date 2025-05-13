@@ -58,6 +58,16 @@ const ImageGallery = () => {
   };
   
   const handleDeleteImage = (id: string) => {
+    // Check if it's a default image
+    if (id.startsWith('default_')) {
+      toast({
+        title: "Ação não permitida",
+        description: "Imagens padrão do projeto não podem ser excluídas.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (confirm("Tem certeza que deseja excluir esta imagem?")) {
       const success = imageStorage.deleteImage(id);
       
@@ -128,14 +138,22 @@ const ImageGallery = () => {
                   {image.category}
                 </span>
                 
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDeleteImage(image.id)}
-                  className="mt-2"
-                >
-                  Excluir
-                </Button>
+                {!image.id.startsWith('default_') && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteImage(image.id)}
+                    className="mt-2"
+                  >
+                    Excluir
+                  </Button>
+                )}
+                
+                {image.id.startsWith('default_') && (
+                  <span className="text-xs text-white/70 mt-1">
+                    Imagem padrão do projeto
+                  </span>
+                )}
               </div>
             </div>
           ))}

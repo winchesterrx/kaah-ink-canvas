@@ -46,15 +46,25 @@ const ImageGallery = () => {
   const loadImages = () => {
     let loadedImages: ImageData[];
     
-    if (!selectedCategory || selectedCategory === "Todas") {
-      loadedImages = imageStorage.getImages();
-    } else {
-      loadedImages = imageStorage.getImagesByCategory(selectedCategory);
+    try {
+      if (!selectedCategory || selectedCategory === "Todas") {
+        loadedImages = imageStorage.getImages();
+      } else {
+        loadedImages = imageStorage.getImagesByCategory(selectedCategory);
+      }
+      
+      // Sort by newest first
+      loadedImages.sort((a, b) => b.timestamp - a.timestamp);
+      setImages(loadedImages);
+    } catch (error) {
+      console.error("Error loading images:", error);
+      toast({
+        title: "Erro ao carregar imagens",
+        description: "Ocorreu um problema ao carregar as imagens. Por favor, tente novamente.",
+        variant: "destructive"
+      });
+      setImages([]);
     }
-    
-    // Sort by newest first
-    loadedImages.sort((a, b) => b.timestamp - a.timestamp);
-    setImages(loadedImages);
   };
   
   const handleDeleteImage = (id: string) => {
@@ -69,18 +79,27 @@ const ImageGallery = () => {
     }
     
     if (confirm("Tem certeza que deseja excluir esta imagem?")) {
-      const success = imageStorage.deleteImage(id);
-      
-      if (success) {
-        toast({
-          title: "Imagem excluída",
-          description: "A imagem foi removida com sucesso."
-        });
-        loadImages();
-      } else {
+      try {
+        const success = imageStorage.deleteImage(id);
+        
+        if (success) {
+          toast({
+            title: "Imagem excluída",
+            description: "A imagem foi removida com sucesso."
+          });
+          loadImages();
+        } else {
+          toast({
+            title: "Erro ao excluir",
+            description: "Não foi possível excluir a imagem.",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting image:", error);
         toast({
           title: "Erro ao excluir",
-          description: "Não foi possível excluir a imagem.",
+          description: "Ocorreu um erro ao tentar excluir a imagem.",
           variant: "destructive"
         });
       }

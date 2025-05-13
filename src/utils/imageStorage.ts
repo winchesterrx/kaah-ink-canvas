@@ -1,8 +1,7 @@
-
 // Simple in-memory image storage
 interface ImageData {
   id: string;
-  file: File;
+  file?: File;
   url: string;
   category: string;
   timestamp: number;
@@ -90,7 +89,26 @@ class ImageStorage {
         // Save to storage
         const currentImages = this.getUserImages();
         const updatedImages = [...currentImages, imageData];
-        localStorage.setItem(this.storageKey, JSON.stringify(updatedImages));
+        
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(updatedImages));
+          console.log("Image saved successfully:", imageData.id);
+        } catch (error) {
+          console.error("Error saving image to localStorage:", error);
+          
+          // If localStorage is full, remove file data but keep the URL
+          if (error instanceof DOMException && (error.name === 'QuotaExceededError' || error.name === 'QUOTA_EXCEEDED_ERR')) {
+            // Create a slimmer version without the full file data
+            const slimImageData: ImageData = {
+              ...imageData,
+              file: undefined
+            };
+            
+            const slimImages = [...currentImages.map(img => ({...img, file: undefined})), slimImageData];
+            localStorage.setItem(this.storageKey, JSON.stringify(slimImages));
+            console.log("Image saved with reduced data due to storage limitations");
+          }
+        }
         
         resolve(imageData);
       };
@@ -101,8 +119,13 @@ class ImageStorage {
   
   // Get only user-uploaded images
   getUserImages(): ImageData[] {
-    const storedData = localStorage.getItem(this.storageKey);
-    return storedData ? JSON.parse(storedData) : [];
+    try {
+      const storedData = localStorage.getItem(this.storageKey);
+      return storedData ? JSON.parse(storedData) : [];
+    } catch (error) {
+      console.error("Error retrieving user images:", error);
+      return [];
+    }
   }
   
   // Delete an image

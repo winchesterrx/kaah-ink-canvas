@@ -1,15 +1,18 @@
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { ThemeProvider } from './context/ThemeContext'
+import { BrowserRouter } from 'react-router-dom'
+import App from './App.tsx'
+import './index.css'
+import { Toaster } from './components/ui/sonner'
 
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from 'next-themes';
-import App from './App.tsx';
-import './index.css';
-
-const root = createRoot(document.getElementById("root")!);
-root.render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider attribute="class" defaultTheme="dark">
-      <App />
-    </ThemeProvider>
-  </React.StrictMode>
-);
+    <BrowserRouter>
+      <ThemeProvider>
+        <App />
+        <Toaster />
+      </ThemeProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+)

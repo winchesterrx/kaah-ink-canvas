@@ -35,7 +35,7 @@ const Index = () => {
       
       <Header />
       {/* Extra padding space to account for the fixed header */}
-      <div className="pt-16 md:pt-24"></div>
+      <div className="pt-14 md:pt-20"></div>
       <HeroSection />
       <Portfolio />
       <AboutSection />

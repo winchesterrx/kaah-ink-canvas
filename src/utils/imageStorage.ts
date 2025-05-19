@@ -1,6 +1,8 @@
-import { githubConfig } from '@/config/github';
 
-// Image storage with physical file system
+import { githubConfig } from '@/config/github';
+import { toast } from 'sonner';
+
+// Image storage with GitHub repository
 interface ImageData {
   id: string;
   url: string;
@@ -51,29 +53,42 @@ const defaultImages = [
 
 class ImageStorage {
   private readonly cache: Map<string, ImageData[]> = new Map();
-  private readonly cacheTimeout = 5 * 60 * 1000; // 5 minutos
+  private readonly cacheTimeout = 5 * 60 * 1000; // 5 minutes
   private lastCacheUpdate = 0;
+  private readonly localStorageKey = 'tattooGalleryImages';
 
   private async makeGitHubRequest(endpoint: string, options: RequestInit = {}) {
-    const headers = {
-      'Authorization': `token ${githubConfig.token}`,
-      'Content-Type': 'application/json',
-      ...options.headers
-    };
+    try {
+      const headers = {
+        'Authorization': `token ${githubConfig.token}`,
+        'Content-Type': 'application/json',
+        ...options.headers
+      };
 
-    const response = await fetch(`${githubConfig.baseUrl}/repos/${githubConfig.owner}/${githubConfig.repo}${endpoint}`, {
-      ...options,
-      headers
-    });
+      const response = await fetch(`${githubConfig.baseUrl}/repos/${githubConfig.owner}/${githubConfig.repo}${endpoint}`, {
+        ...options,
+        headers
+      });
 
-    if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error('Limite de requisições da API do GitHub atingido. Tente novamente em alguns minutos.');
+      if (!response.ok) {
+        if (response.status === 403) {
+          console.error('GitHub API rate limit exceeded');
+          toast('Limite de requisições atingido', {
+            description: 'Tente novamente em alguns minutos.'
+          });
+          throw new Error('GitHub API rate limit exceeded');
+        }
+        
+        console.error(`GitHub API error: ${response.status} ${response.statusText}`);
+        const errorData = await response.text();
+        throw new Error(`Error with GitHub API: ${response.statusText}. ${errorData}`);
       }
-      throw new Error(`Erro na requisição ao GitHub: ${response.statusText}`);
-    }
 
-    return response;
+      return response;
+    } catch (error) {
+      console.error('GitHub request failed:', error);
+      throw error;
+    }
   }
 
   private getCategoryFromFilename(filename: string): string {
@@ -97,21 +112,55 @@ class ImageStorage {
     return Date.now() - this.lastCacheUpdate > this.cacheTimeout;
   }
 
+  // Save images to localStorage as fallback
+  private saveToLocalStorage(images: ImageData[]) {
+    try {
+      localStorage.setItem(this.localStorageKey, JSON.stringify(images));
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+  }
+
+  // Get images from localStorage as fallback
+  private getFromLocalStorage(): ImageData[] {
+    try {
+      const saved = localStorage.getItem(this.localStorageKey);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  }
+
   async getImages(): Promise<ImageData[]> {
     try {
       if (!this.shouldRefreshCache() && this.cache.has('all')) {
         return this.cache.get('all')!;
       }
 
-      const response = await this.makeGitHubRequest('/contents/uploads');
-      const files = await response.json();
-
-      const userImages = files.map((file: any) => ({
-        id: file.sha,
-        url: file.download_url,
-        category: this.getCategoryFromFilename(file.name),
-        timestamp: Date.now()
-      }));
+      // Try to get images from GitHub
+      let userImages: ImageData[] = [];
+      try {
+        const response = await this.makeGitHubRequest('/contents/uploads');
+        const files = await response.json();
+        
+        userImages = files.map((file: any) => ({
+          id: file.sha,
+          url: file.download_url,
+          category: this.getCategoryFromFilename(file.name),
+          timestamp: Date.now()
+        }));
+        
+        // Save successful response to localStorage as backup
+        this.saveToLocalStorage(userImages);
+      } catch (error) {
+        console.error('Error fetching images from GitHub:', error);
+        toast('Erro ao buscar imagens remotas', { 
+          description: 'Usando imagens locais como fallback' 
+        });
+        
+        // Try to get images from localStorage as fallback
+        userImages = this.getFromLocalStorage();
+      }
 
       const allImages = [...userImages, ...defaultImages];
       this.cache.set('all', allImages);
@@ -119,7 +168,10 @@ class ImageStorage {
 
       return allImages;
     } catch (error) {
-      console.error('Erro ao buscar imagens:', error);
+      console.error('Error getting images:', error);
+      toast('Erro ao carregar imagens', {
+        description: 'Exibindo apenas imagens padrão'
+      });
       return defaultImages;
     }
   }
@@ -131,9 +183,13 @@ class ImageStorage {
 
   async saveImage(file: File, category: string): Promise<void> {
     try {
+      // Generate a unique filename with category
       const filename = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${category}.${file.name.split('.').pop()}`;
+      
+      // Convert image to base64
       const base64Data = await this.fileToBase64(file);
 
+      // Try to save to GitHub
       await this.makeGitHubRequest('/contents/uploads/' + filename, {
         method: 'PUT',
         body: JSON.stringify({
@@ -143,10 +199,35 @@ class ImageStorage {
         })
       });
 
-      // Invalidate cache
+      // Invalidate cache to refresh images
       this.lastCacheUpdate = 0;
+      
+      // Save to local storage as backup
+      const localImage = {
+        id: `local_${Date.now()}`,
+        url: URL.createObjectURL(file),
+        category,
+        timestamp: Date.now()
+      };
+      
+      const localImages = this.getFromLocalStorage();
+      localImages.push(localImage);
+      this.saveToLocalStorage(localImages);
+
     } catch (error) {
-      console.error('Erro ao salvar imagem:', error);
+      console.error('Error saving image:', error);
+      
+      // Show error to user
+      if (error instanceof Error) {
+        toast('Erro ao salvar imagem', {
+          description: error.message
+        });
+      } else {
+        toast('Erro ao salvar imagem', {
+          description: 'Ocorreu um erro desconhecido'
+        });
+      }
+      
       throw error;
     }
   }
@@ -157,25 +238,58 @@ class ImageStorage {
 
       const allImages = await this.getImages();
       const image = allImages.find(img => img.id === id);
+      
       if (!image) return false;
 
+      // Get filename from URL
       const filename = image.url.split('/').pop();
-      const fileInfo = await this.makeGitHubRequest('/contents/uploads/' + filename).then(r => r.json());
-
-      await this.makeGitHubRequest('/contents/uploads/' + filename, {
-        method: 'DELETE',
-        body: JSON.stringify({
-          message: `Remoção de imagem: ${filename}`,
-          sha: fileInfo.sha,
-          branch: githubConfig.branch
-        })
-      });
-
-      // Invalidate cache
-      this.lastCacheUpdate = 0;
-      return true;
+      
+      if (!filename) {
+        console.error('Could not extract filename from URL:', image.url);
+        return false;
+      }
+      
+      // Get file info from GitHub
+      try {
+        const fileInfo = await this.makeGitHubRequest('/contents/uploads/' + filename).then(r => r.json());
+        
+        // Delete file from GitHub
+        await this.makeGitHubRequest('/contents/uploads/' + filename, {
+          method: 'DELETE',
+          body: JSON.stringify({
+            message: `Remoção de imagem: ${filename}`,
+            sha: fileInfo.sha,
+            branch: githubConfig.branch
+          })
+        });
+        
+        // Also remove from localStorage if it exists there
+        const localImages = this.getFromLocalStorage();
+        const filteredImages = localImages.filter(img => img.id !== id);
+        this.saveToLocalStorage(filteredImages);
+        
+        // Invalidate cache
+        this.lastCacheUpdate = 0;
+        
+        return true;
+      } catch (error) {
+        console.error('Error deleting from GitHub:', error);
+        toast('Não foi possível excluir do repositório remoto', {
+          description: 'A imagem pode ter sido removida anteriormente'
+        });
+        
+        // Remove from localStorage anyway
+        const localImages = this.getFromLocalStorage();
+        const filteredImages = localImages.filter(img => img.id !== id);
+        this.saveToLocalStorage(filteredImages);
+        
+        // Invalidate cache
+        this.lastCacheUpdate = 0;
+        
+        return true;
+      }
     } catch (error) {
-      console.error('Erro ao deletar imagem:', error);
+      console.error('Error deleting image:', error);
       return false;
     }
   }
